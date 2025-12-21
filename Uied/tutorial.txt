@@ -1,0 +1,67 @@
+UIED GUI Usage Guide (C++)
+Version 3.5 — Terminal & Mechanics Update
+================================
+1. Setup
+Drop the uied.h file into your project directory and include it in your source:
+code
+C++
+#include "uied.h"
+No external dependencies like DLLs or complex libraries are required. It uses pure Win32 API.
+2. Basic Usage (Script-Style API)
+The library uses a declarative approach — you describe the interface, and UIED handles the rest.
+Button
+code
+C++
+uied::button("Text", x, y, width, height, RGB(r, g, b), []() {
+    // click handler logic here
+});
+Input Field
+code
+C++
+int id = uied::input(x, y, width, height, "default text");
+To read the current value later:
+code
+C++
+std::string val = uied::Engine::getInstance().getInput(id);
+Slider
+code
+C++
+uied::slider(x, y, width, RGB(color), [](float value) {
+    // 'value' is a float between 0.0 and 1.0
+});
+Label (Text)
+code
+C++
+uied::label("Plain Text", x, y, RGB(r, g, b));
+3. Terminal Mechanics (New)
+The Terminal is a specialized multi-line element for command processing and logs.
+Creating a Terminal
+code
+C++
+int termID = uied::terminal(x, y, width, height, [](std::string cmd) {
+    // This code runs when the user presses ENTER
+    if (cmd == "ping") {
+        uied::Engine::getInstance().print(termID, "Pong!");
+    }
+});
+Terminal Operations
+Print to Terminal:
+uied::Engine::getInstance().print(termID, "Message");
+Clear Terminal:
+uied::Engine::getInstance().clear(termID);
+4. Initialization
+After defining all UI elements in your main() or setup function, you must call:
+code
+C++
+uied::init(windowWidth, windowHeight, "Window Title");
+Note: This function is blocking; it starts the internal message loop and keeps the window open.
+5. Interaction Details
+Hover Effect: Buttons automatically brighten when the mouse cursor is over them.
+Focus System:
+Click an Input Field or Terminal to focus it (indicated by a border).
+Typing only affects the currently focused element.
+Terminal Logic:
+Pressing Enter triggers the command callback and adds the command to the history.
+History automatically scrolls; the last 20 lines are kept in view.
+Drag & Slide: Sliders respond to mouse dragging for smooth value adjustment.
+Double Buffering: All rendering is performed on an off-screen buffer (Memory DC) to ensure a flicker-free experience even during rapid updates.
